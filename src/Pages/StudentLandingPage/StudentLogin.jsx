@@ -12,7 +12,7 @@ export default function StudentLogin() {
     e.preventDefault();
 
     try {
-      const response = await api.post("http://localhost:3000/api/auth/login", {
+      const response = await api.post("/auth/login", {
         email,
         password,
       });
