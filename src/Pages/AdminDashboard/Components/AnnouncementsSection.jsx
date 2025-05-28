@@ -1,40 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2 } from 'react-feather';
+import api from '../../../../api.js'; // adjust the path if needed
+import AddAnnouncementModal from '../../../Components/AddAnnouncementModal.jsx';
+import EditAnnouncementModal from '../../../Components/EditAnnouncementModal.jsx';
 
 const AnnouncementsSection = () => {
-  // Hardcoded sample announcements data
-  const announcements = [
-    {
-      _id: 'a1',
-      title: 'System Maintenance',
-      message: 'The system will be down for maintenance on May 30th from 12 AM to 4 AM.',
-      type: 'Maintenance',
-      audience: 'All Users',
-      createdAt: '2025-05-25T08:00:00Z',
-    },
-    {
-      _id: 'a2',
-      title: 'New Feature Release',
-      message: 'We have released a new dashboard feature to improve your experience.',
-      type: 'Update',
-      audience: 'Premium Users',
-      createdAt: '2025-05-20T10:30:00Z',
-    },
-    {
-      _id: 'a3',
-      title: 'Holiday Notice',
-      message: 'Office will be closed on June 5th for the national holiday.',
-      type: 'Notice',
-      audience: 'Employees',
-      createdAt: '2025-05-22T14:45:00Z',
-    },
-  ];
+  const [announcements, setAnnouncement] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editAnnouncement, setEditAnnouncement] = useState(null);
+
+  const fetchAnnouncement = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('No auth token found');
+        return;
+      }
+      const response = await api.get('/announcement/all', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAnnouncement(response.data);
+    } catch (error) {
+      console.error('Error fetching announcement:', error);
+    }
+  };
+  const handleDelete = async (announcementId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await api.delete(`/announcement/delete/${announcementId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchAnnouncement();
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+    }
+  };
+
+  const handleView = (announcementId) => {
+    const selected = announcements.find(a => a._id === announcementId);
+    setEditAnnouncement(selected);
+  };
+
+
+  useEffect(() => {
+    fetchAnnouncement();
+  }, []);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-slate-800">Announcements</h2>
-        <button className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button
+          className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          onClick={() => setShowModal(true)}
+        >
           <Plus className="h-4 w-4" />
           New Announcement
         </button>
@@ -54,10 +73,13 @@ const AnnouncementsSection = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="text-blue-600 hover:text-blue-900">
+                <button className="text-blue-600 hover:text-blue-900"
+                  onClick={() => handleView(announcement._id)}
+                >
                   <Edit className="h-4 w-4" />
                 </button>
-                <button className="text-red-600 hover:text-red-900">
+                <button className="text-red-600 hover:text-red-900"
+                  onClick={() => handleDelete(announcement._id)}>
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -65,6 +87,19 @@ const AnnouncementsSection = () => {
           </div>
         ))}
       </div>
+
+      {showModal && <AddAnnouncementModal onClose={() => setShowModal(false)} />}
+      {editAnnouncement && (
+        <EditAnnouncementModal
+          announcement={editAnnouncement}
+          onClose={() => setEditAnnouncement(null)}
+          onUpdate={() => {
+            fetchAnnouncement();
+            setEditAnnouncement(null);
+          }}
+        />
+      )}
+
     </div>
   );
 };
