@@ -9,6 +9,9 @@ const UsersSection = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
   const [email, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleDelete = async (userId) => {
     try {
@@ -23,6 +26,38 @@ const UsersSection = () => {
       console.error('Error deleting user:', error);
     }
   };
+
+  const handleView = async (userId, mode) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.get(`/user/id/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSelectedUser(response.data);
+      setIsEditMode(mode === 'edit'); // true if edit
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await api.put(`/user/id/${selectedUser._id}`, selectedUser, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -131,10 +166,10 @@ const UsersSection = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">{user.contact}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex gap-2">
-                        <button className="text-slate-600 hover:text-slate-900">
+                        <button onClick={() => handleView(user._id, 'view')}>
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="text-blue-600 hover:text-blue-900">
+                        <button onClick={() => handleView(user._id, 'edit')}>
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
@@ -178,6 +213,82 @@ const UsersSection = () => {
       </div>
 
       <AddUserPopup isOpen={showPopup} onClose={() => setShowPopup(false)} />
+      {showModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">
+              {isEditMode ? 'Edit User' : 'User Details'}
+            </h2>
+
+            {isEditMode ? (
+              <>
+                <input
+                  type="text"
+                  value={selectedUser.firstName}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, firstName: e.target.value })
+                  }
+                  className="mb-2 w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  value={selectedUser.lastName}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, lastName: e.target.value })
+                  }
+                  className="mb-2 w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="email"
+                  value={selectedUser.email}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, email: e.target.value })
+                  }
+                  className="mb-2 w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  value={selectedUser.address}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, address: e.target.value })
+                  }
+                  className="mb-2 w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  value={selectedUser.contact}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, contact: e.target.value })
+                  }
+                  className="mb-4 w-full border rounded px-3 py-2"
+                />
+                <button
+                  className="mr-2 px-4 py-2 bg-green-600 text-white rounded"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                <p><strong>Name:</strong> {selectedUser.firstName} {selectedUser.lastName}</p>
+                <p><strong>Email:</strong> {selectedUser.email}</p>
+                <p><strong>Role:</strong> {selectedUser.role}</p>
+                <p><strong>Address:</strong> {selectedUser.address}</p>
+                <p><strong>Contact:</strong> {selectedUser.contact}</p>
+              </>
+            )}
+
+            <button
+              className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
