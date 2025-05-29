@@ -1,6 +1,8 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import StudentLogin from "./Pages/StudentLandingPage/StudentLogin";
+import StudentDashboard  from "./Pages/StudentDashboard/StudentDashboard";
+import TeacherDashboard  from "./Pages/TeacherDashboard/TeacherDashboard";
 import TeacherLogin from "./Pages/TeacherLandingPage/TeacherLogin";
 import AdminLoginPage from "./Pages/AdminPortal/AdminPortal";
 import TeacherParentChat from "./Pages/TeacherChatPage/TeacherChatPage";
@@ -50,6 +52,11 @@ function App() {
         <Route path="/study-material" element={<StudyMaterials />} />
         <Route path="/teacher-feedback" element={<FeedbackManagement />} />
         <Route path="/event-details" element={<EventPage />} />
+
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
+
+        <Route path="/lecture-dashboard" element={<TeacherDashboard />} />
+
         {/* Add more routes as needed */}
 
 
