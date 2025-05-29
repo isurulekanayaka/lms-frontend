@@ -7,6 +7,8 @@ import EventsSection from './Components/EventsSection';
 import ExamsSection from './Components/ExamsSection';
 import PaymentsSection from './Components/PaymentsSection';
 import TimetableSection from './Components/TimetableSection';
+import ModuleSection from './Components/ModuleSection';
+
 import { BookOpen, Users, Bell, Calendar, FileText, DollarSign, Clock } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -20,6 +22,7 @@ const AdminDashboard = () => {
     { id: 'dashboard', label: 'Dashboard', icon: BookOpen },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'courses', label: 'Courses', icon: BookOpen },
+    { id: 'modules', label: 'Modules', icon: BookOpen },
     { id: 'announcements', label: 'Announcements', icon: Bell },
     { id: 'events', label: 'Events', icon: Calendar },
     { id: 'exams', label: 'Exams', icon: FileText },
@@ -32,6 +35,7 @@ const AdminDashboard = () => {
       case 'dashboard': return <DashboardOverview />;
       case 'users': return <UsersSection />;
       case 'courses': return <CoursesSection />;
+      case 'modules': return <ModuleSection />;
       case 'announcements': return <AnnouncementsSection />;
       case 'events': return <EventsSection />;
       case 'exams': return <ExamsSection />;
