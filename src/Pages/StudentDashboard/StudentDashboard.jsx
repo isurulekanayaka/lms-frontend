@@ -5,6 +5,8 @@ import {
 import api from '../../../api.js'; // adjust path as needed
 import ModuleUi from '../StudentDashboard/components/Modules.jsx';
 import TimetableUi from '../StudentDashboard/components/Timetable.jsx';
+import AnnouncementsSection from '../StudentDashboard/components/AnnouncementsSection.jsx';
+import Profile from '../StudentDashboard/components/Profile.jsx';
 
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -54,7 +56,7 @@ const StudentDashboard = () => {
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'modules', label: 'Modules', icon: BookOpen },
     { id: 'timetable', label: 'Timetable', icon: Calendar },
-    { id: 'materials', label: 'Study Materials', icon: FileText },
+    // { id: 'materials', label: 'Study Materials', icon: FileText },
     { id: 'announcements', label: 'Announcements', icon: Bell },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings }
@@ -161,15 +163,13 @@ const StudentDashboard = () => {
       case 'announcements':
         return (
           <div className="p-10">
-            <h2 className="text-3xl font-bold text-[#374258]">Announcements</h2>
-            <p className="text-[#6a7285] mt-2">Stay updated with the latest news and announcements.</p>
+            <AnnouncementsSection/>
           </div>
         );
       case 'profile':
         return (
           <div className="p-10">
-            <h2 className="text-3xl font-bold text-[#374258]">Profile</h2>
-            <p className="text-[#6a7285] mt-2">Manage your personal profile and account settings.</p>
+            <Profile/>
           </div>
         );
       case 'settings':
